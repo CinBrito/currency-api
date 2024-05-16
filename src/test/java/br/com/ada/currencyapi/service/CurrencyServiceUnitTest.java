@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -93,7 +94,7 @@ public class CurrencyServiceUnitTest {
     }
 
     @Test
-    void testConvertCurrency() {
+    void testConvertCurrency() throws JsonProcessingException {
         Mockito.when(currencyRepository.findByName(any())).thenReturn(
                 Currency.builder()
                         .exchanges(Map.of("EUR", new BigDecimal("2")))

@@ -2,6 +2,7 @@ package br.com.ada.currencyapi.controller;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +38,7 @@ public class CurrencyController {
     }
 
     @GetMapping("/convert")
-    public ResponseEntity<ConvertCurrencyResponse> convert(ConvertCurrencyRequest request) throws CoinNotFoundException {
+    public ResponseEntity<ConvertCurrencyResponse> convert(ConvertCurrencyRequest request) throws CoinNotFoundException, JsonProcessingException {
         return new ResponseEntity<>(currencyService.convert(request), HttpStatus.OK);
     }
 
