@@ -43,20 +43,15 @@ public class CurrencyControllerUnitTest {
     }
 
     @Test
-    void testGetCurrencies() throws Exception {
-        Mockito.when(currencyService.get()).thenReturn(List.of(CurrencyResponse.builder()
-                        .label("1 - USD")
-                .build()));
+    void testGetReturns200() throws Exception {
+        Mockito.when(currencyService.get()).thenReturn(List.of(CurrencyResponse.builder().
+                label("USD").build(), CurrencyResponse.builder().
+                label("EUR").build()));
 
-        mockMvc.perform(
-                        MockMvcRequestBuilders.get("/currency")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].label").value("1 - USD"))
-                .andDo(MockMvcResultHandlers.print());
-
+        mockMvc.perform(MockMvcRequestBuilders.get("/currency")).
+                andExpect(MockMvcResultMatchers.status().isOk()).
+                andExpect(MockMvcResultMatchers.jsonPath("$[0].label").value("USD")).
+                andExpect(MockMvcResultMatchers.jsonPath("$[1].label").value("EUR"));
     }
 
 
