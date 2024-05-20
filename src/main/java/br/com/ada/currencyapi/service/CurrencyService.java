@@ -1,35 +1,29 @@
 package br.com.ada.currencyapi.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
+import br.com.ada.currencyapi.client.AwesomeApiClient;
+import br.com.ada.currencyapi.domain.*;
+import br.com.ada.currencyapi.domain.Currency;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import br.com.ada.currencyapi.domain.ConvertCurrencyRequest;
-import br.com.ada.currencyapi.domain.ConvertCurrencyResponse;
-import br.com.ada.currencyapi.domain.Currency;
-import br.com.ada.currencyapi.domain.CurrencyRequest;
-import br.com.ada.currencyapi.domain.CurrencyResponse;
 import br.com.ada.currencyapi.exception.CoinNotFoundException;
 import br.com.ada.currencyapi.exception.CurrencyException;
 import br.com.ada.currencyapi.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
 public class CurrencyService {
 
-    final private RestTemplate restTemplate = new RestTemplate();
+    private final AwesomeApiClient awesomeApiClient;
 
     private final CurrencyRepository currencyRepository;
+
+
 
     public List<CurrencyResponse> get() {
         List<Currency> currencies = currencyRepository.findAll();
@@ -69,24 +63,19 @@ public class CurrencyService {
 
     }
 
-    private BigDecimal getAmount(ConvertCurrencyRequest request) throws CoinNotFoundException, JsonProcessingException {
-        Currency from = currencyRepository.findByName(request.getFrom());
+    private BigDecimal getAmount(ConvertCurrencyRequest request) throws CoinNotFoundException {
 
-        if (Objects.isNull(from)) {
-            throw new CoinNotFoundException(String.format("Coin not found: %s", request.getFrom()));
+        String coins = request.getFrom() + "-" + request.getTo();
+        ResponseEntity<Map<String, AwesomeApiResponse>> response = awesomeApiClient.getExchange(coins);
+
+        if (response.getBody().isEmpty()) {
+            throw new CoinNotFoundException(String.format("There was an error processing request for coins: %s and %s", request.getFrom(), request.getTo()));
         }
 
-        String exchangeSource = "https://economia.awesomeapi.com.br/json/last/";
-        ResponseEntity<String> response
-                = restTemplate.getForEntity(exchangeSource + request.getFrom() + "-" + request.getTo() , String.class);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.getBody());
-        JsonNode subRoot = root.path(request.getFrom()+request.getTo());
-        JsonNode currencyRate = subRoot.path("high");
-        BigDecimal exchange = new BigDecimal(currencyRate.asText());
+        Map<String, AwesomeApiResponse> currencyData = response.getBody();
+        BigDecimal exchange = new BigDecimal(currencyData.get(coins.replace("-","")).getHigh());
 
         return request.getAmount().multiply(exchange);
     }
-
 
 }

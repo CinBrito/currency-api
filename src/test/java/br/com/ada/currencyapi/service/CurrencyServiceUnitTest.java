@@ -95,15 +95,10 @@ public class CurrencyServiceUnitTest {
 
     @Test
     void testConvertCurrency() throws JsonProcessingException {
-        Mockito.when(currencyRepository.findByName(any())).thenReturn(
-                Currency.builder()
-                        .exchanges(Map.of("EUR", new BigDecimal("2")))
-                        .build()
-        );
-
         ConvertCurrencyRequest request = ConvertCurrencyRequest
                 .builder()
                 .to("EUR")
+                .from("BRL")
                 .amount(BigDecimal.TEN)
                 .build();
 
