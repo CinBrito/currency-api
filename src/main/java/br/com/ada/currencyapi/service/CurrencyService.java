@@ -68,7 +68,7 @@ public class CurrencyService {
         String coins = request.getFrom() + "-" + request.getTo();
         ResponseEntity<Map<String, AwesomeApiResponse>> response = awesomeApiClient.getExchange(coins);
 
-        if (response.getBody().isEmpty()) {
+        if (Objects.requireNonNull(response.getBody()).isEmpty()) {
             throw new CoinNotFoundException(String.format("There was an error processing request for coins: %s and %s", request.getFrom(), request.getTo()));
         }
 
