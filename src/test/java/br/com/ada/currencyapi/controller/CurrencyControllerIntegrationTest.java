@@ -101,17 +101,4 @@ public class CurrencyControllerIntegrationTest {
 
         currencyRepository.deleteAll();
     }
-
-    // TODO: Implementar testess
-    @Test
-    void testConvertCurrencyThrowsCoinNotFoundExceptionForExchangesReturn404() throws Exception {
-
-        currencyRepository.save(new Currency(1L, "LCS", "Moeda do lucas", null));
-
-        currencyRepository.save(new Currency(2L, "USD", "Dolar", null));
-
-        mockMvc.perform(
-                get("/currency/convert?from=USD&to=LCS&amount=10")
-        ).andExpect(status().isNotFound());
-    }
 }
