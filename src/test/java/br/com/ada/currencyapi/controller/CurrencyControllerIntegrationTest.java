@@ -102,7 +102,7 @@ public class CurrencyControllerIntegrationTest {
         currencyRepository.deleteAll();
     }
 
-    // TODO: Implementar testes
+    // TODO: Implementar testess
     @Test
     void testConvertCurrencyThrowsCoinNotFoundExceptionForExchangesReturn404() throws Exception {
 
